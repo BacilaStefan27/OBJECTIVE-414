@@ -11,7 +11,6 @@ import net.thucydides.core.annotations.WithTag;
 import org.fluentlenium.core.annotation.Page;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
@@ -51,7 +50,7 @@ public class HomeTest {
 
 	@Test
 	@Title("C3")
-	@Ignore
+//	@Ignore
 	public void Test3(){
 		NavStep.checkallbuttons();
 	}
@@ -60,6 +59,6 @@ public class HomeTest {
 	@Test
 	public void Test4(){
 		NavStep.click2ndSector();
-		Assert.assertTrue(false);
+//		Assert.assertTrue(false);
 	}
 }

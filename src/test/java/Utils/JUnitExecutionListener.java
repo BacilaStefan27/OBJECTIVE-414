@@ -18,9 +18,12 @@ public class JUnitExecutionListener extends RunListener {
 	private static final Description FAILED = Description.createTestDescription("failed", "failed");
 
 	public void testRunStarted(Description description) throws Exception {
-		if(TRClient.getPlanID().isEmpty())
+		if(TRClient.getPlanID().isEmpty()){
 			TRClient.CreateTestPlan();
-		TRClient.AddSuitetoPlan(getTestIDs(description));
+		}
+		String TPName = description.getDisplayName().substring(description.getDisplayName().indexOf(".")+1);
+		TRClient.AddSuitetoPlan(getTestIDs(description),TPName);
+
 	}
 
 	public void testRunFinished(Result result) throws Exception {
@@ -47,11 +50,9 @@ public class JUnitExecutionListener extends RunListener {
 	}
 
 	public void testAssumptionFailure(Failure failure) {
-		System.out.println("Failed: " + failure.getDescription().getMethodName());
 	}
 
 	public void testIgnored(Description description) throws Exception {
-		System.out.println("Ignored: " + description.getMethodName());
 	}
 
 	private JSONArray getTestIDs(Description tests){

@@ -91,10 +91,10 @@ public class TRClient {
 
 	}
 
-	public static void AddSuitetoPlan(JSONArray cases) {
+	public static void AddSuitetoPlan(JSONArray cases, String name) {
 		JSONObject data = new JSONObject();
 		data.put("include_all",false);
-		data.put("name","TestSuitForClassX");
+		data.put("name",name);
 		data.put("description","CreatedByAutomationRun");
 		data.put("case_ids",cases);
 		data.put("suite_id",1);
