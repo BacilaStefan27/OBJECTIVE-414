@@ -3,19 +3,17 @@ package Tests;
 import Pages.NavBar;
 import Steps.NavBarSteps;
 import Utils.MyRunner;
-import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Managed;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.annotations.Title;
 import net.thucydides.core.annotations.WithTag;
 import org.fluentlenium.core.annotation.Page;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
-
-import java.util.Map;
 
 @RunWith(MyRunner.class)
 public class HomeTest {
@@ -32,7 +30,11 @@ public class HomeTest {
 	@Before
 	public void setup(){
 		NavPage.open();
-		Map<String,String> Titles = Serenity.getCurrentSession().getMetaData();
+	}
+
+	@After
+	public  void cleanup(){
+		driver.quit();
 	}
 
 	@Title("C1")

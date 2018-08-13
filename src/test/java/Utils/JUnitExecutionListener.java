@@ -23,7 +23,6 @@ public class JUnitExecutionListener extends RunListener {
 		}
 		String TPName = description.getDisplayName().substring(description.getDisplayName().indexOf(".")+1);
 		TRClient.AddSuitetoPlan(getTestIDs(description),TPName);
-
 	}
 
 	public void testRunFinished(Result result) throws Exception {
@@ -69,21 +68,17 @@ public class JUnitExecutionListener extends RunListener {
 				}
 			}
 		}
-
 		return testIDs;
 	}
 
 	private String getTestID(Description test){
-		JSONArray testIDs = new JSONArray();
 		String csID="";
 		Iterator<Annotation> iter1 = test.getAnnotations().iterator();
-		while(iter1.hasNext()){
-			while (iter1.hasNext()){
-				Annotation obj1 = iter1.next();
-				if(obj1.toString().contains("Title(value="))
-				{
-					csID = obj1.toString().substring(obj1.toString().lastIndexOf("C") + 1, obj1.toString().lastIndexOf(")"));
-				}
+		while (iter1.hasNext()){
+			Annotation obj1 = iter1.next();
+			if(obj1.toString().contains("Title(value="))
+			{
+				csID = obj1.toString().substring(obj1.toString().lastIndexOf("C") + 1, obj1.toString().lastIndexOf(")"));
 			}
 		}
 		return csID;
