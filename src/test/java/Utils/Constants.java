@@ -8,7 +8,7 @@ public class Constants {
 	public static final String Password = "rgRV1gxlKrSKFfQeDoQN";
 	public static final String BaseURL = "https://stefanbacila29.testrail.io/";
 	public static final String ProjectID = "1";
-	public static final String MilestoneID = "1";
+//	public static final String MilestoneID = "1";
 	public static final String TPDescription = "Created by automation FW";
 	public static final String TPName = currentDate();
 //	public static final String Description = "admin";

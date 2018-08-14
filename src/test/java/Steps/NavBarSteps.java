@@ -4,6 +4,7 @@ import Pages.NavBar;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.StepGroup;
 
+@SuppressWarnings("ALL")
 public class NavBarSteps  {
 
 	NavBar NavPage;

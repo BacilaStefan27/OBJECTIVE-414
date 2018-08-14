@@ -99,15 +99,13 @@ public class TRClient {
 		data.put("case_ids",cases);
 		data.put("suite_id",1);
 
-		JSONObject answ = new JSONObject();
+		JSONObject answ;
 		try {
-			answ= (JSONObject) TrClient23.sendPost("add_plan_entry/"+PlanID,data);
+			answ = (JSONObject) TrClient23.sendPost("add_plan_entry/"+PlanID,data);
 			String rund = answ.get("runs").toString().substring(answ.get("runs").toString().lastIndexOf("\"id\":")+5);
 			rund = rund.substring(0,rund.indexOf(","));
 			setRunID(rund);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (APIException e) {
+		} catch (IOException | APIException e) {
 			e.printStackTrace();
 		}
 	}
@@ -123,9 +121,7 @@ public class TRClient {
 
 		try {
 			TrClient23.sendPost("add_run/"+Constants.ProjectID,data);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (APIException e) {
+		} catch (IOException | APIException e) {
 			e.printStackTrace();
 		}
 	}
