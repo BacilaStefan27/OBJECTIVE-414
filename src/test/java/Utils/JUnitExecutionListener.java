@@ -13,6 +13,20 @@ public class JUnitExecutionListener extends RunListener {
 
 	private long Timer = 0;
 
+	public static int getCounter() {
+		return Conunter;
+	}
+
+	public static void setConunterto0() {
+		Conunter=0;
+	}
+
+	public static void ConunterIncrement() {
+		Conunter++;
+	}
+
+	private static int Conunter;
+
 	private static final Description FAILED = Description.createTestDescription("failed", "failed");
 
 	public void testRunStarted(Description description) {
@@ -35,9 +49,10 @@ public class JUnitExecutionListener extends RunListener {
 	public void testFinished(Description description) {
 		long duration = (System.currentTimeMillis()-Timer)/1000;
 		if (description.getChildren().contains(FAILED)){
-			TRClient.AddResultForCase(TRClient.getRunID(),getTestID(description),5,String.format("%ss",duration));
+			TRClient.AddResultForCase(TRClient.getRunID(),getTestID(description),5,String.format("%ss",duration),Conunter);
+
 		}
-		else TRClient.AddResultForCase(TRClient.getRunID(),getTestID(description),1,String.format("%ss",duration));
+		else TRClient.AddResultForCase(TRClient.getRunID(),getTestID(description),1,String.format("%ss",duration),Conunter);
 		Timer=0;
 	}
 
@@ -51,6 +66,8 @@ public class JUnitExecutionListener extends RunListener {
 
 	public void testIgnored(Description description) {
 	}
+
+	//PRIVATE METHODS TO MANIPULATE DATA
 
 	private JSONArray getTestIDs(Description tests){
 		JSONArray testIDs = new JSONArray();
@@ -73,4 +90,5 @@ public class JUnitExecutionListener extends RunListener {
 			}
 		return csID;
 	}
+
 }

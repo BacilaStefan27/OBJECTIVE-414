@@ -2,10 +2,12 @@ package TestRailAPI;
 
 
 import Utils.Constants;
+import Utils.JUnitExecutionListener;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 public class TRClient {
 
@@ -64,12 +66,26 @@ public class TRClient {
 		}
 	}
 
-	public static void AddResultForCase(String RunID, String CaseID, Integer Result, String Elapsed){
+	public static void AddResultForCase(String RunID, String CaseID, Integer Result, String Elapsed,Integer Stepscount){
 		JSONObject data = new JSONObject();
 		data.put("run_id",RunID);
 		data.put("case_id",CaseID);
 		data.put("elapsed",Elapsed);
 		data.put("status_id",Result);
+
+		if(JUnitExecutionListener.getCounter()!=0){
+			JSONArray CustomSteps = GetStepsForCase(CaseID);
+			Iterator<JSONObject> it1 = CustomSteps.iterator();
+			Integer nr = 0;
+			while(it1.hasNext()){
+				if(nr<Stepscount){
+					it1.next().put("status_id",1);
+					nr++;
+				}
+				else it1.next().put("status_id",5);
+			}
+			data.put("custom_step_results",CustomSteps);
+		}
 
 		try {
 			AuthClient();
@@ -124,6 +140,19 @@ public class TRClient {
 		} catch (IOException | APIException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static JSONArray GetStepsForCase(String CaseID){
+		JSONObject resp = new JSONObject();
+		JSONArray Steps = new JSONArray();
+
+		try {
+			resp = (JSONObject) TrClient23.sendGet("get_case/"+CaseID);
+			Steps = (JSONArray) resp.get("custom_steps_separated");
+		} catch (IOException | APIException e) {
+			e.printStackTrace();
+		}
+		return Steps;
 	}
 }
 
