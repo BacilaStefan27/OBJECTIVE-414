@@ -9,7 +9,7 @@ import org.junit.runner.notification.RunListener;
 
 import java.lang.annotation.Annotation;
 
-public class JUnitExecutionListener extends RunListener {
+public class TRExecutionListener extends RunListener {
 
 	private long Timer = 0;
 

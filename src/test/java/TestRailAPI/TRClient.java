@@ -2,12 +2,15 @@ package TestRailAPI;
 
 
 import Utils.Constants;
-import Utils.JUnitExecutionListener;
+import Utils.TRExecutionListener;
+import net.thucydides.core.model.TestOutcome;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TRClient {
 
@@ -73,7 +76,7 @@ public class TRClient {
 		data.put("elapsed",Elapsed);
 		data.put("status_id",Result);
 
-		if(JUnitExecutionListener.getCounter()!=0){
+		if(TRExecutionListener.getCounter()!=0){
 			JSONArray CustomSteps = GetStepsForCase(CaseID);
 			Iterator<JSONObject> it1 = CustomSteps.iterator();
 			Integer nr = 0;
@@ -153,6 +156,47 @@ public class TRClient {
 			e.printStackTrace();
 		}
 		return Steps;
+	}
+
+	public static void AddResultsForCases(JSONArray data){
+		JSONObject result = new JSONObject();
+		result.put("results",data);
+		try {
+			TrClient23.sendPost("add_results_for_cases/"+RunID,data);
+		} catch (IOException | APIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void ParseSerenityResults(List<TestOutcome> testOutcomeResults){
+		JSONArray results = new JSONArray();
+		testOutcomeResults.forEach(test1 -> {
+					JSONObject Tcase = new JSONObject();
+					JSONArray Tsteps = new JSONArray();
+					Tsteps=GetStepsForCase(test1.getTitle().substring(test1.getTitle().lastIndexOf("C")+1));
+					Tcase.put("case_id", test1.getTitle());
+					Tcase.put("status_id", test1.getResult().name());
+					Tcase.put("elapsed",test1.getDurationInSeconds());
+					if(test1.countTestSteps()>0){
+						AtomicReference<Integer> stepindex = new AtomicReference<>(0);
+						JSONArray finalTsteps = Tsteps;
+						test1.getTestSteps().forEach(testStep -> {
+							Iterator<JSONObject> it1 = finalTsteps.iterator();
+							while(it1.hasNext()){
+								if(it1.next().get("content").toString().equals(testStep.getDescription()))
+									it1.next().put("status_id",testStep.getResult().name());
+							}
+							stepindex.getAndSet(stepindex.get() + 1);
+						});
+					}
+					results.add(Tcase);
+				}
+		);
+
+		//parse data
+
+		//add results
+		AddResultsForCases(results);
 	}
 }
 

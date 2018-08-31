@@ -2,8 +2,8 @@ package Tests;
 
 import Pages.NavBar;
 import Steps.NavBarSteps;
-import Utils.JUnitExecutionListener;
 import Utils.MyRunner;
+import Utils.TRExecutionListener;
 import net.thucydides.core.annotations.Managed;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.annotations.Title;
@@ -30,7 +30,7 @@ public class Home2Test {
 	@Before
 	public void setup(){
 		NavPage.open();
-		JUnitExecutionListener.setConunterto0();
+		TRExecutionListener.setConunterto0();
 	}
 
 	@After
@@ -64,13 +64,13 @@ public class Home2Test {
 	public void Test4(){
 		//Step1
 		NavStep.click2ndSector();
-		JUnitExecutionListener.ConunterIncrement();
+		TRExecutionListener.ConunterIncrement();
 		//Step2
 		Assert.assertTrue(true);
-		JUnitExecutionListener.ConunterIncrement();
+		TRExecutionListener.ConunterIncrement();
 
 		//Step3
 		Assert.fail();
-		JUnitExecutionListener.ConunterIncrement();
+		TRExecutionListener.ConunterIncrement();
 	}
 }
