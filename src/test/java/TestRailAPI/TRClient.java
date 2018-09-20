@@ -2,15 +2,15 @@ package TestRailAPI;
 
 
 import Utils.Constants;
-import Utils.TRExecutionListener;
 import net.thucydides.core.model.TestOutcome;
+import net.thucydides.core.model.TestStep;
+import net.thucydides.core.util.NameConverter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.ListIterator;
 
 public class TRClient {
 
@@ -69,35 +69,6 @@ public class TRClient {
 		}
 	}
 
-	public static void AddResultForCase(String RunID, String CaseID, Integer Result, String Elapsed,Integer Stepscount){
-		JSONObject data = new JSONObject();
-		data.put("run_id",RunID);
-		data.put("case_id",CaseID);
-		data.put("elapsed",Elapsed);
-		data.put("status_id",Result);
-
-		if(TRExecutionListener.getCounter()!=0){
-			JSONArray CustomSteps = GetStepsForCase(CaseID);
-			Iterator<JSONObject> it1 = CustomSteps.iterator();
-			Integer nr = 0;
-			while(it1.hasNext()){
-				if(nr<Stepscount){
-					it1.next().put("status_id",1);
-					nr++;
-				}
-				else it1.next().put("status_id",5);
-			}
-			data.put("custom_step_results",CustomSteps);
-		}
-
-		try {
-			AuthClient();
-			TrClient23.sendPost("add_result_for_case/"+RunID+"/"+CaseID,data);
-		} catch (IOException | APIException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private static String getActiveMilestone(){
 		JSONArray Milestone = new JSONArray();
 		try {
@@ -116,7 +87,7 @@ public class TRClient {
 		data.put("name",name);
 		data.put("description","CreatedByAutomationRun");
 		data.put("case_ids",cases);
-		data.put("suite_id",1);
+		data.put("suite_id",593);
 
 		JSONObject answ;
 		try {
@@ -146,12 +117,12 @@ public class TRClient {
 	}
 
 	public static JSONArray GetStepsForCase(String CaseID){
-		JSONObject resp = new JSONObject();
+		JSONObject resp;
 		JSONArray Steps = new JSONArray();
 
 		try {
 			resp = (JSONObject) TrClient23.sendGet("get_case/"+CaseID);
-			Steps = (JSONArray) resp.get("custom_steps_separated");
+			Steps = (JSONArray) resp.get("custom_step_separated");
 		} catch (IOException | APIException e) {
 			e.printStackTrace();
 		}
@@ -162,7 +133,7 @@ public class TRClient {
 		JSONObject result = new JSONObject();
 		result.put("results",data);
 		try {
-			TrClient23.sendPost("add_results_for_cases/"+RunID,data);
+			TrClient23.sendPost("add_results_for_cases/"+RunID,result);
 		} catch (IOException | APIException e) {
 			e.printStackTrace();
 		}
@@ -170,33 +141,44 @@ public class TRClient {
 
 	public static void ParseSerenityResults(List<TestOutcome> testOutcomeResults){
 		JSONArray results = new JSONArray();
-		testOutcomeResults.forEach(test1 -> {
-					JSONObject Tcase = new JSONObject();
-					JSONArray Tsteps = new JSONArray();
-					Tsteps=GetStepsForCase(test1.getTitle().substring(test1.getTitle().lastIndexOf("C")+1));
-					Tcase.put("case_id", test1.getTitle());
-					Tcase.put("status_id", test1.getResult().name());
-					Tcase.put("elapsed",test1.getDurationInSeconds());
-					if(test1.countTestSteps()>0){
-						AtomicReference<Integer> stepindex = new AtomicReference<>(0);
-						JSONArray finalTsteps = Tsteps;
-						test1.getTestSteps().forEach(testStep -> {
-							Iterator<JSONObject> it1 = finalTsteps.iterator();
-							while(it1.hasNext()){
-								if(it1.next().get("content").toString().equals(testStep.getDescription()))
-									it1.next().put("status_id",testStep.getResult().name());
-							}
-							stepindex.getAndSet(stepindex.get() + 1);
+		testOutcomeResults.forEach(testCase -> {
+					JSONObject tCase = new JSONObject();
+					tCase.put("case_id", testCase.getTitle().substring(1));
+					tCase.put("status_id",parseSerenityResult(testCase.getResult().name()));
+					tCase.put("elapsed",String.format("%ss",Math.round(testCase.getDurationInSeconds())));
+					if(testCase.countTestSteps()>0){
+						JSONArray tSteps = GetStepsForCase(testCase.getTitle().substring(testCase.getTitle().lastIndexOf("C")+1));
+						testCase.getTestSteps().forEach(testStep -> {
+							if(testStep.hasChildren())
+								testStep.getChildren().forEach(testStepChild -> parseStepsResult(testStepChild,tSteps));
+							else parseStepsResult(testStep,tSteps);
 						});
+						tCase.put("custom_step_results",tSteps);
 					}
-					results.add(Tcase);
+					results.add(tCase);
 				}
 		);
-
-		//parse data
-
-		//add results
 		AddResultsForCases(results);
+	}
+
+//	==============================PRIVATE METHODS==========================
+
+	private static Integer parseSerenityResult(String result){
+		switch (result){
+			case "SUCCESS" : return 1;
+			case "FAILURE" : return 5;
+		}
+		return null;
+	}
+
+	private static void parseStepsResult(TestStep step, JSONArray caseSteps){
+		ListIterator<JSONObject> stepIterTR = caseSteps.listIterator();
+		while(stepIterTR.hasNext()){
+			JSONObject customStep = stepIterTR.next();
+			if(NameConverter.humanize(customStep.get("content").toString()).equals(step.getDescription()))
+				customStep.put("status_id",parseSerenityResult(step.getResult().name()));
+		}
+//		return caseSteps;
 	}
 }
 

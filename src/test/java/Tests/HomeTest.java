@@ -6,7 +6,6 @@ import Utils.MyRunner;
 import net.thucydides.core.annotations.Managed;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.annotations.Title;
-import net.thucydides.core.annotations.WithTag;
 import org.fluentlenium.core.annotation.Page;
 import org.junit.After;
 import org.junit.Assert;
@@ -37,27 +36,26 @@ public class HomeTest {
 		driver.quit();
 	}
 
-	@Title("C1")
+	@Title("C163233")
 	@Test
 	public void Test1(){
 		Assert.assertTrue("Incorrect page title!!!",driver.getTitle().contains("Work With Ixxus"));
 	}
 
-	@Title("C2")
-	@WithTag("case:C2")
+	@Title("C163234")
 	@Test
 	public void Test2(){
 		NavStep.returnToMain();
 	}
 
 	@Test
-	@Title("C3")
+	@Title("C163235")
 //	@Ignore
 	public void Test3(){
 		NavStep.checkallbuttons();
 	}
 
-	@Title("C4")
+	@Title("C163236")
 	@Test
 	public void Test4(){
 		NavStep.click2ndSector();
