@@ -36,14 +36,14 @@ public class Home2Test {
 
 	}
 
-	@Title("C54")
+	@Title("C164306")
 	@Test
 //	@Ignore
 	public void Test1(){
 		Assert.assertTrue("Incorrect page title!!!",driver.getTitle().contains("Work With Ixxus"));
 	}
 
-	@Title("C55")
+	@Title("C164307")
 	@Test
 //	@Ignore
 	public void Test2(){
@@ -51,13 +51,13 @@ public class Home2Test {
 	}
 
 	@Test
-	@Title("C56")
+	@Title("C164308")
 //	@Ignore
 	public void Test3(){
 		NavStep.checkallbuttons();
 	}
 
-	@Title("C57")
+	@Title("C164309")
 	@Test
 	public void Test4(){
 		//Step1
