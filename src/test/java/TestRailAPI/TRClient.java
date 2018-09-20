@@ -18,10 +18,6 @@ public class TRClient {
 
 	private static String PlanID= "";
 
-	public static String getRunID() {
-		return RunID;
-	}
-
 	private static void setRunID(String runID) {
 		RunID = runID;
 	}
@@ -34,11 +30,6 @@ public class TRClient {
 
 	private static void setPlanID(String planID) {
 		PlanID = planID;
-	}
-
-	private static void AuthClient(){
-		TrClient23.setPassword(Constants.Password);
-		TrClient23.setUser(Constants.Username);
 	}
 
 	public static void CreateTestPlan(){
@@ -67,18 +58,6 @@ public class TRClient {
 		} catch (IOException | APIException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static String getActiveMilestone(){
-		JSONArray Milestone = new JSONArray();
-		try {
-			AuthClient();
-			Milestone = ((JSONArray) TrClient23.sendGet("get_milestones/"+Constants.ProjectID+"&is_started=1"));
-		} catch (IOException | APIException e) {
-			e.printStackTrace();
-		}
-		return ((JSONObject) Milestone.get(0)).get("id").toString();
-
 	}
 
 	public static void AddSuitetoPlan(JSONArray cases, String name) {
@@ -114,19 +93,6 @@ public class TRClient {
 		} catch (IOException | APIException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static JSONArray GetStepsForCase(String CaseID){
-		JSONObject resp;
-		JSONArray Steps = new JSONArray();
-
-		try {
-			resp = (JSONObject) TrClient23.sendGet("get_case/"+CaseID);
-			Steps = (JSONArray) resp.get("custom_step_separated");
-		} catch (IOException | APIException e) {
-			e.printStackTrace();
-		}
-		return Steps;
 	}
 
 	public static void AddResultsForCases(JSONArray data){
@@ -178,7 +144,35 @@ public class TRClient {
 			if(NameConverter.humanize(customStep.get("content").toString()).equals(step.getDescription()))
 				customStep.put("status_id",parseSerenityResult(step.getResult().name()));
 		}
-//		return caseSteps;
+	}
+
+	private static JSONArray GetStepsForCase(String CaseID){
+		JSONObject resp;
+		JSONArray Steps = new JSONArray();
+
+		try {
+			resp = (JSONObject) TrClient23.sendGet("get_case/"+CaseID);
+			Steps = (JSONArray) resp.get("custom_step_separated");
+		} catch (IOException | APIException e) {
+			e.printStackTrace();
+		}
+		return Steps;
+	}
+
+	private static String getActiveMilestone(){
+		JSONArray Milestone = new JSONArray();
+		try {
+			AuthClient();
+			Milestone = ((JSONArray) TrClient23.sendGet("get_milestones/"+Constants.ProjectID+"&is_started=1"));
+		} catch (IOException | APIException e) {
+			e.printStackTrace();
+		}
+		return ((JSONObject) Milestone.get(0)).get("id").toString();
+	}
+
+	private static void AuthClient(){
+		TrClient23.setPassword(Constants.Password);
+		TrClient23.setUser(Constants.Username);
 	}
 }
 
